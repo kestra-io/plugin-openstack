@@ -1,10 +1,10 @@
 {
-  "name": "plugin-template",
+  "name": "plugin-openstack",
   "build": {
     "context": ".",
     "dockerfile": "Dockerfile"
   },
-  "workspaceFolder": "/workspaces/plugin-template",
+  "workspaceFolder": "/workspaces/plugin-openstack",
   "forwardPorts": [8080],
   "customizations": {
     "vscode": {
