@@ -1,0 +1,8 @@
+group: io.kestra.plugin.openstack.compute
+name: "compute"
+title: "OpenStack Compute"
+description: "Manage OpenStack Nova virtual machines, power states, metadata, snapshots, and event-driven triggers."
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"

@@ -2,14 +2,15 @@
 
 ## What
 
-- Provides plugin components under `io.kestra.plugin.openstack`.
-- Includes classes such as `Example`, `Trigger`.
+- Provides OpenStack compute, snapshot, and trigger automation components under `io.kestra.plugin.openstack.compute`.
+- Client and response models located in `io.kestra.plugin.openstack.client.model`.
+- Includes tasks: `CreateServer`, `ListServers`, `UpdateServer`, `DeleteServer`, `GetServerMetadata`, `StartServer`, `StopServer`, `RebootServer`, `ResetServer`, `SuspendServer`, `ResumeServer`, `CreateServerSnapshot`, `ListServerSnapshots`, `DeleteServerSnapshot`, `RestoreServerFromSnapshot`, `CloneServer`, and `Trigger`.
 
 ## Why
 
-- What user problem does this solve? Teams need a concrete starting point for building and validating new Kestra plugins without recreating the same project scaffolding from scratch.
-- Why would a team adopt this plugin in a workflow? It gives plugin authors a ready-made reference repo they can adapt alongside their own build, test, and publishing workflow.
-- What operational/business outcome does it enable? It shortens plugin delivery time, reduces setup mistakes, and makes internal or partner plugin development more repeatable.
+- **What user problem does this solve?** Teams orchestrating hybrid clouds require seamless, automated virtual machine provisioning, power management, disaster recovery snapshotting, and event-driven reactions on OpenStack infrastructure.
+- **Why would a team adopt this plugin in a workflow?** It eliminates manual cloud administration scripts by providing declarative, enterprise-grade Kestra tasks with full name resolution, base64 cloud-init encoding, and KV Store watermark isolation.
+- **What operational/business outcome does it enable?** Automates cost-saving schedules (auto-stopping non-production VMs), enables VMware-to-OpenStack workload migrations, and ensures zero-data-loss point-in-time disaster recovery snapshots.
 
 ## How
 
@@ -17,31 +18,49 @@
 
 Single-module plugin. Source packages under `io.kestra.plugin`:
 
-- `openstack`
-
-Infrastructure dependencies (Docker Compose services):
-
-- `app`
-
-### Key Plugin Classes
-
-- `io.kestra.plugin.openstack.Example`
+- `openstack.client`: HTTP client (`OpenStackClient`) for Keystone v3, Nova Compute, and Glance Image APIs.
+- `openstack.client.model`: Typed Jackson models, Enums (`EndpointType`, `RebootType`, `EventType`), and DTOs with full `@Schema` annotations.
+- `openstack.compute`: Declarative Kestra tasks, shared connection interface (`OpenStackConnectionInterface`), server action base (`AbstractServerActionTask`), and state trigger (`Trigger`).
 
 ### Project Structure
 
 ```
 plugin-openstack/
 ├── src/main/java/io/kestra/plugin/openstack/
-├── src/test/java/io/kestra/plugin/openstack/
+│   ├── client/
+│   │   ├── model/
+│   │   └── OpenStackClient.java
+│   └── compute/
+│       ├── AbstractComputeTask.java
+│       ├── AbstractServerActionTask.java
+│       ├── CloneServer.java
+│       ├── CreateServer.java
+│       ├── CreateServerSnapshot.java
+│       ├── DeleteServer.java
+│       ├── DeleteServerSnapshot.java
+│       ├── GetServerMetadata.java
+│       ├── ListServerSnapshots.java
+│       ├── ListServers.java
+│       ├── OpenStackConnectionInterface.java
+│       ├── RebootServer.java
+│       ├── ResetServer.java
+│       ├── RestoreServerFromSnapshot.java
+│       ├── ResumeServer.java
+│       ├── StartServer.java
+│       ├── StopServer.java
+│       ├── SuspendServer.java
+│       ├── Trigger.java
+│       └── UpdateServer.java
+├── src/test/java/io/kestra/plugin/openstack/compute/
+│   ├── OpenStackComputeTest.java
+│   └── OpenStackTriggerTest.java
 ├── build.gradle
 └── README.md
 ```
-
-## Local rules
-
-- Base the wording on the implemented packages and classes, not on template README text.
 
 ## References
 
 - https://kestra.io/docs/plugin-developer-guide
 - https://kestra.io/docs/plugin-developer-guide/contribution-guidelines
+- https://docs.openstack.org/api-ref/compute/
+- https://docs.openstack.org/api-ref/image/v2/
