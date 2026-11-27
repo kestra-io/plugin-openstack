@@ -1,8 +1,8 @@
 group: io.kestra.plugin.openstack
 name: "openstack"
 title: "OpenStack"
-description: "OpenStack plugin for Kestra"
-body: ""
+description: "OpenStack plugin for Kestra with tasks and triggers for OpenStack Nova Compute and Glance Image service."
+body: "Orchestrate VM lifecycles, snapshots, scaling, and event triggers across OpenStack private and public clouds using Keystone v3 authentication."
 videos: []
 createdBy: "Kestra Core Team"
 managedBy: "Kestra Core Team"

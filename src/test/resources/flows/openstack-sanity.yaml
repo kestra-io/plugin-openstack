@@ -1,0 +1,80 @@
+id: openstack_sanity
+namespace: company.infrastructure
+
+description: |
+  Sanity flow demonstrating end-to-end orchestration with OpenStack Nova and Glance:
+  listing instances, provisioning a compute VM with cloud-init user data,
+  updating metadata, querying server details, power state management,
+  and executing disaster recovery snapshots.
+
+tasks:
+  - id: list_servers
+    type: io.kestra.plugin.openstack.compute.ListServers
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    fetchType: FETCH
+    limit: 10
+
+  - id: create_server
+    type: io.kestra.plugin.openstack.compute.CreateServer
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    name: "sanity-worker-vm"
+    flavorRef: "m1.small"
+    imageRef: "ubuntu-22.04"
+    networks:
+      - uuid: "private-net"
+    userData: |
+      #cloud-config
+      package_upgrade: true
+    metadata:
+      environment: "production"
+      managed_by: "kestra"
+    waitUntilComplete: true
+    waitTimeout: PT10M
+
+  - id: get_metadata
+    type: io.kestra.plugin.openstack.compute.GetServerMetadata
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    serverId: "{{ outputs.create_server.serverId }}"
+
+  - id: update_server
+    type: io.kestra.plugin.openstack.compute.UpdateServer
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    serverId: "{{ outputs.create_server.serverId }}"
+    name: "sanity-worker-renamed"
+    metadata:
+      audit: "verified"
+
+  - id: stop_server
+    type: io.kestra.plugin.openstack.compute.StopServer
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    serverId: "{{ outputs.create_server.serverId }}"
+    waitUntilComplete: true
+    waitTimeout: PT5M
+
+  - id: start_server
+    type: io.kestra.plugin.openstack.compute.StartServer
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    serverId: "{{ outputs.create_server.serverId }}"
+    waitUntilComplete: true
+    waitTimeout: PT5M
+
+  - id: delete_server
+    type: io.kestra.plugin.openstack.compute.DeleteServer
+    authUrl: "https://identity.region.openstack.example.com/v3"
+    applicationCredentialId: "{{ secret('OS_APP_CRED_ID') }}"
+    applicationCredentialSecret: "{{ secret('OS_APP_CRED_SECRET') }}"
+    serverId: "{{ outputs.create_server.serverId }}"
+    waitUntilComplete: true
+    waitTimeout: PT5M
